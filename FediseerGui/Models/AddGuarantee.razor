@@ -26,7 +26,7 @@
     InstanceDetails instance;
 
     [CascadingParameter]
-    public LocalStorage keyComponent { get; set; }
+    public LocalStorage storage { get; set; }
 
     [CascadingParameter]
     public FediseerClient client { get; set; }
@@ -44,7 +44,7 @@
 
     private async Task CreateGuarantee()
     {
-        var resp = await client.Put_guaranteesAsync(await keyComponent.GetValueAsync(), "GUI", null, instance.Domain);
+        var resp = await client.Put_guaranteesAsync(await storage.GetValueAsync(), "GUI", null, instance.Domain);
 
         Console.WriteLine(resp.Result.Message);
 

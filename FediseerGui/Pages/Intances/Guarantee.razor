@@ -1,0 +1,40 @@
+﻿@page "/instances/guarantee"
+
+
+<RequiresApiKey>
+    <Field>
+        <FieldLabel>Domain</FieldLabel>
+        <TextEdit @bind-Text=Domain />
+    </Field>
+    <ModalFooter>
+        <Button Color="Color.Secondary" Clicked="@Cancel">Cancel</Button>
+        <Button Color="Color.Primary" Clicked="@CreateGuarantee">Add Guarantee</Button>
+    </ModalFooter>
+</RequiresApiKey>
+
+@code {
+    private string Domain { get; set; }
+
+    [CascadingParameter]
+    public FediseerClient client { get; set; }
+
+    [CascadingParameter]
+    public LocalStorage storage { get; set; }
+
+    [Inject]
+    NavigationManager navMgr{ get; set; }
+
+    private async Task Cancel()
+    {
+        navMgr.NavigateTo("/instances/whitelisted");
+    }
+
+    private async Task CreateGuarantee()
+    {
+        var resp = await client.Put_guaranteesAsync(await storage.GetValueAsync(), "GUI", null, Domain);
+
+        Console.WriteLine(resp.Result.Message);
+
+        navMgr.NavigateTo("/instances/whitelisted");
+    }
+}
