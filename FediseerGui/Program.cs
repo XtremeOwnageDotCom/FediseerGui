@@ -4,6 +4,7 @@ using Blazorise.Icons.FontAwesome;
 using Fediseer;
 using FediseerGui.Components;
 using FediseerGui.Data;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,10 @@ builder.Services.AddTransient<FediseerClient>((sp) =>
     var cl = hcFac.CreateClient("fediseer");
     return new FediseerClient(cl);
 });
-builder.Services.AddDataProtection();
+builder.Services
+    .AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@"/app/storage/keys"));
+
 builder.Services.AddTransient<LocalStorage>();
 
 builder.Services
@@ -31,6 +35,11 @@ builder.Services
     })
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
+
+builder.WebHost.ConfigureKestrel(o =>
+{
+    o.ListenAnyIP(5000);
+});
 
 var app = builder.Build();
 
