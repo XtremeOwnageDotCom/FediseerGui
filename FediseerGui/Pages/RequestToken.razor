@@ -1,0 +1,23 @@
+﻿@page "/requesttoken"
+
+<PageTitle>Request Token</PageTitle>
+
+<h1>Regenerate Token</h1>
+
+<InputText @bind-Value=InstanceName>Instance Name</InputText>
+
+<InputText @bind-Value=AdminName>Admin Name</InputText>
+
+<button @onclick="() => GenerateToken()"></button>
+
+@code {
+    string InstanceName { get; set; }
+    string AdminName { get; set; }
+
+   
+
+    protected async Task GenerateToken()
+    {
+
+    }
+}

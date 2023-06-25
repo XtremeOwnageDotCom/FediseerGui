@@ -1,0 +1,49 @@
+﻿@page "/instances/whitelisted"
+
+@using global::Fediseer;
+
+<PageTitle>Whitelisted Instances</PageTitle>
+
+<FediseerGui.Models.AddGuarantee @ref=addGuaranteeModel />
+
+<DataGrid TItem="InstanceDetails"
+          Data="@instances"
+          PageSize="50"
+          ShowPager
+          Responsive>
+    <DataGridCommandColumn />
+    <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Caption="Domain" Sortable="true" />
+    <DataGridColumn Field="@nameof(InstanceDetails.Software)" Caption="Software" />
+    <DataGridColumn Field="@nameof(InstanceDetails.Open_registrations)" Caption="Open Registration" />
+    <DataGridColumn Field="@nameof(InstanceDetails.Email_verify)" Caption="Email Verification" />
+    <DataGridColumn Field="@nameof(InstanceDetails.Approvals)" Caption="Approvals" />
+    <DataGridColumn Field="@nameof(InstanceDetails.Endorsements)" Caption="Endorsements" />
+    <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor" />
+    <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Sortable=false>
+        <DisplayTemplate>
+            <Blazorise.Bootstrap.Button Color="Color.Success" Clicked="async () => await AddGuarantee(context)">Add Guarantee</Blazorise.Bootstrap.Button>
+        </DisplayTemplate>
+    </DataGridColumn>
+</DataGrid>
+
+
+@code {
+    [CascadingParameter]
+    public FediseerClient client { get; set; }
+
+    IEnumerable<InstanceDetails> instances { get; set; } = Enumerable.Empty<InstanceDetails>();
+    private Models.AddGuarantee addGuaranteeModel { get; set; }
+
+    private Task AddGuarantee(InstanceDetails instance)
+    {
+        return addGuaranteeModel.ShowModal(instance);
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        var whitelistReponse = await client.Get_whitelistAsync("gui", null, null, null, null, null);
+
+        instances = whitelistReponse.Result.Instances;
+    }
+}

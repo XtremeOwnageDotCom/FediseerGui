@@ -1,0 +1,31 @@
+﻿
+@if (key.KeyIsValid)
+{
+    @ChildContent
+}
+else
+{
+    <h3>Invalid Api Key</h3>
+
+    <Label>Please enter your ApiKey</Label>
+    <TextEdit @bind-Text=newValue></TextEdit>
+
+    <Button Color="Color.Primary" Clicked="saveValue">Set Key</Button>
+}
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [CascadingParameter]
+    public LocalStorage key { get; set; }
+
+
+    private string newValue { get; set; } = null;
+
+    protected async Task saveValue()
+    {
+        await key.SetValue(newValue);
+        Console.WriteLine("Key Set");
+        StateHasChanged();
+    }
+}
