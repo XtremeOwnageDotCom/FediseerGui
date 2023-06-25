@@ -4,7 +4,7 @@
 
 <PageTitle>Whitelisted Instances</PageTitle>
 
-<FediseerGui.Models.AddGuarantee @ref=addGuaranteeModel />
+<FediseerGui.Models.AddEndorsement @ref=endorsementComponent />
 
 <DataGrid TItem="InstanceDetails"
           Data="@instances"
@@ -21,7 +21,7 @@
     <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor" />
     <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Sortable=false>
         <DisplayTemplate>
-            <Blazorise.Bootstrap.Button Color="Color.Success" Clicked="async () => await AddGuarantee(context)">Add Guarantee</Blazorise.Bootstrap.Button>
+            <Blazorise.Bootstrap.Button Color="Color.Success" Clicked="async () => await Endorse(context)">Endorse</Blazorise.Bootstrap.Button>
         </DisplayTemplate>
     </DataGridColumn>
 </DataGrid>
@@ -32,11 +32,11 @@
     public FediseerClient client { get; set; }
 
     IEnumerable<InstanceDetails> instances { get; set; } = Enumerable.Empty<InstanceDetails>();
-    private Models.AddGuarantee addGuaranteeModel { get; set; }
+    private Models.AddEndorsement endorsementComponent { get; set; }
 
-    private Task AddGuarantee(InstanceDetails instance)
+    private Task Endorse(InstanceDetails instance)
     {
-        return addGuaranteeModel.ShowModal(instance);
+        return endorsementComponent.ShowModal(instance);
     }
     protected override async Task OnParametersSetAsync()
     {
