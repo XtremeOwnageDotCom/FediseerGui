@@ -1,35 +1,42 @@
 ﻿@using FediseerGui.Components;
 @using global::Fediseer;
 <Modal @ref="modalRef">
-    <ModalContent Centered>
+    @if (instance is not null)
+    {
+        <ModalContent Centered>
         <ModalHeader>
             <ModalTitle>Endorse Instance</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            <RequiresApiKey>
-                <Field>
-                    <FieldLabel>Domain</FieldLabel>
-                    <TextEdit ReadOnly @bind-Text=instance.Domain />
-                </Field>
-                <ModalFooter>
-                    <Button Color="Color.Secondary" Clicked="@HideModal">Cancel</Button>
-                    <Button Color="Color.Primary" Clicked="@CreateGuarantee">Yes I Sure</Button>
-                </ModalFooter>
-            </RequiresApiKey>
-        </ModalBody>
-    </ModalContent>
+            <RequiresLogin>
+                <ChildContent>
+                    <Field>
+                        <FieldLabel>Domain</FieldLabel>
+                        <TextEdit ReadOnly @bind-Text=instance.Domain />
+                        </Field>
+                        <ModalFooter>
+                            <Button Color="Color.Secondary" Clicked="@HideModal">Cancel</Button>
+                            <Button Color="Color.Primary" Clicked="@CreateGuarantee">Yes I Sure</Button>
+                        </ModalFooter>
+                    </ChildContent>
+                    <NotLoggedIn>
+                        Please login first.
+                    </NotLoggedIn>
+                </RequiresLogin>
+            </ModalBody>
+        </ModalContent>
+    }
 </Modal>
+
+
 @code {
     // reference to the modal component
     private Modal modalRef;
     InstanceDetails instance;
 
     [CascadingParameter]
-    public LocalStorage keyComponent { get; set; }
-
-    [CascadingParameter]
-    public FediseerClient client { get; set; }
+    public LocalStorage storage { get; set; }
 
     public Task ShowModal(InstanceDetails instance)
     {
@@ -44,7 +51,7 @@
 
     private async Task CreateGuarantee()
     {
-        var resp = await client.Put_endorsementsAsync(await keyComponent.GetValueAsync(), "GUI", null, instance.Domain);
+        var resp = await storage.client.Put_endorsementsAsync(storage.ApiKey, storage.UserAgent, null, instance.Domain);
 
         Console.WriteLine(resp.Result.Message);
 

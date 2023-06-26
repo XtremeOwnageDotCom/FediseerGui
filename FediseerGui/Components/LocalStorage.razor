@@ -1,0 +1,25 @@
+﻿@using Fediseer;
+
+@ChildContent
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Inject]
+    public Fediseer.FediseerClient client { get; set; }
+
+    public bool IsLoggedIn => !string.IsNullOrEmpty(ApiKey) && InstanceDetails != null;
+
+    public string ApiKey { get; set; }
+
+    public InstanceDetails InstanceDetails { get; set; }
+
+    public string UserAgent => "FediseerGUI";
+
+    public Task StateChanged()
+    {
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+}

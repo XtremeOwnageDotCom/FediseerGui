@@ -1,0 +1,39 @@
+﻿<LogonComponent @ref=model />
+
+@if (storage.IsLoggedIn)
+{
+    @ChildContent
+}
+else if (ShowLoginButton)
+{
+    <Button Clicked="Login" Color="Color.Primary">Please Login</Button>
+}
+else
+{
+    @NotLoggedIn
+}
+
+@code {
+    private LogonComponent model { get; set; }
+
+    /// <summary>
+    /// If true, will show a logon button when user is not logged in.
+    /// </summary>
+    [Parameter]
+    public bool ShowLoginButton { get; set; } = false;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment NotLoggedIn { get; set; }
+
+    [CascadingParameter]
+    public LocalStorage storage { get; set; }
+
+    private Task Login()
+    {
+        return model.ShowModal();
+    }
+
+}

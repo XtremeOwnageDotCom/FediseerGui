@@ -1,0 +1,70 @@
+﻿@using FediseerGui.Components;
+@using global::Fediseer;
+<Modal @ref="modal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Login</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @Error
+            <Field>
+                <FieldLabel>Api Key</FieldLabel>
+                <FieldBody>
+                    <TextEdit @bind-Text=ApiKey></TextEdit>
+                </FieldBody>
+
+            </Field>
+            <Button Color="Color.Primary" Clicked="Login">Login</Button>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+
+@code {
+    private string Error { get; set; } = string.Empty;
+
+    // reference to the modal component
+    private Modal modal;
+
+    private string ApiKey { get; set; }
+
+
+    [CascadingParameter]
+    public LocalStorage storage { get; set; }
+
+    /// <summary>
+    /// Executed when a user is logged in.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnLoggedIn { get; set; }
+
+    public Task ShowModal()
+    {
+        ApiKey = null;
+        Error = null;
+        return modal.Show();
+    }
+
+    public Task HideModal()
+    {
+        return modal.Hide();
+    }
+
+    private async Task Login()
+    {
+        var resp = await storage.client.Get_find_instanceAsync(ApiKey, "GUI", null);
+
+        if (resp.StatusCode == 200)
+        {
+            storage.ApiKey = ApiKey;
+            storage.InstanceDetails = resp.Result;
+            await OnLoggedIn.InvokeAsync();
+            await this.modal.Hide();
+            await storage.StateChanged();
+            return;
+        }
+
+        Error = $"Failure: Status Code {resp.StatusCode} received.";
+    }
+}

@@ -3,7 +3,6 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Fediseer;
 using FediseerGui.Components;
-using FediseerGui.Data;
 using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddHttpClient("fediseer", (sp, client) =>
 {
     client.BaseAddress = new Uri("https://fediseer.com/api/");    

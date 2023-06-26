@@ -13,58 +13,27 @@
     </BarBrand>
     <BarMenu>
         <BarStart>
-@*            <BarItem>
-                <BarLink To="#home">
-                    <BarIcon IconName="IconName.Dashboard" />
-                    Home
-                </BarLink>
+            @*            <BarItem>
+            <BarLink To="#home">
+            <BarIcon IconName="IconName.Dashboard" />
+            Home
+            </BarLink>
             </BarItem>*@
             <BarItem>
-                <BarLink To="https://fediseer.com/">Documentation</BarLink>
+                <BarLink To="https://fediseer.com/">Fediseer Documentation</BarLink>
             </BarItem>
             <BarItem>
-                <BarDropdown>
-                    <BarDropdownToggle>
-                        <BarIcon IconName="IconName.Edit" />
-                        Instances
-                    </BarDropdownToggle>
-                    <BarDropdownMenu>
-                        <BarDropdownItem>
-                            <BarLink To="/instances/whitelisted">
-                                Whitelisted
-                            </BarLink>
-                        </BarDropdownItem>
-                        @*<BarDropdownItem>Another action</BarDropdownItem>*@
-                    </BarDropdownMenu>
-                </BarDropdown>
+                <BarLink To="/instances/whitelisted">Whitelisted Instances</BarLink>
+            </BarItem>
+            <BarItem>
+                <BarLink To="/instances/guarantee">Add Guarantee</BarLink>
+            </BarItem>
+            <BarItem>
+                <BarLink To="/instances/claim">Claim Instance</BarLink>
             </BarItem>
         </BarStart>
     </BarMenu>
 </Bar>
-
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">FediseerGui</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/instances/whitelisted">
-                <span class="oi oi-plus" aria-hidden="true"></span> Whitelisted Instances
-            </NavLink>
-        </div>
-    </nav>
-</div>
 
 @code {
     private bool collapseNavMenu = true;

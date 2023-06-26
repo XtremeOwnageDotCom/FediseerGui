@@ -1,28 +1,44 @@
 ﻿@page "/instances/guarantee"
+@using System.ComponentModel.DataAnnotations;
 
+<RequiresLogin ShowLoginButton>
 
-<RequiresApiKey>
     <Field>
-        <FieldLabel>Domain</FieldLabel>
-        <TextEdit @bind-Text=Domain />
+        <Label>Domain</Label>
+        <Validation Validator="ValidationRule.IsNotEmpty">
+            <TextEdit @bind-Text=Domain Placeholder="Enter domain to guarantee">
+                <Feedback>
+                    <ValidationNone>Please enter a valid domain. ie. lemmyonline.com</ValidationNone>
+                    <ValidationError>Please enter a valid domain</ValidationError>
+                </Feedback>
+            </TextEdit>
+        </Validation>
     </Field>
-    <ModalFooter>
-        <Button Color="Color.Secondary" Clicked="@Cancel">Cancel</Button>
-        <Button Color="Color.Primary" Clicked="@CreateGuarantee">Add Guarantee</Button>
-    </ModalFooter>
-</RequiresApiKey>
+
+    <Div Class="error">
+        @Error
+    </Div>
+
+    <Button Color="Color.Secondary" Clicked="@Cancel">Cancel</Button>
+    <Button Color="Color.Primary" Clicked="@CreateGuarantee">Add Guarantee</Button>
+</RequiresLogin>
+
+
 
 @code {
-    private string Domain { get; set; }
+    //ToDo - better validations needed here. Need to validate an actual domain name is entered.
 
-    [CascadingParameter]
-    public FediseerClient client { get; set; }
+    [Required]
+    [StringLength(50)]
+    private string Domain { get; set; }
 
     [CascadingParameter]
     public LocalStorage storage { get; set; }
 
     [Inject]
-    NavigationManager navMgr{ get; set; }
+    NavigationManager navMgr { get; set; }
+
+    private string Error { get; set; }
 
     private async Task Cancel()
     {
@@ -31,10 +47,16 @@
 
     private async Task CreateGuarantee()
     {
-        var resp = await client.Put_guaranteesAsync(await storage.GetValueAsync(), "GUI", null, Domain);
+        try
+        {
+            var resp = await storage.client.Put_guaranteesAsync(storage.ApiKey, storage.UserAgent, null, Domain);
 
-        Console.WriteLine(resp.Result.Message);
-
-        navMgr.NavigateTo("/instances/whitelisted");
+            navMgr.NavigateTo("/instances/whitelisted");
+        }
+        catch (Fediseer.ApiException ex)
+        {
+            Error = "ERROR: " + ex.Message;
+            Console.WriteLine(ex.Message);
+        }
     }
 }

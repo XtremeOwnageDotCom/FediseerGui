@@ -1,0 +1,25 @@
+﻿<LogonComponent @ref=model OnLoggedIn="refresh" />
+@if (storage.IsLoggedIn && !string.IsNullOrEmpty(storage?.InstanceDetails?.Domain))
+{
+    <text>Welcome, @storage.InstanceDetails.Domain</text>
+}
+else
+{
+    <Button Clicked="Login" Color="Color.Primary">Login</Button>
+}
+@code {
+    private LogonComponent model { get; set; }
+
+    [CascadingParameter]
+    public LocalStorage storage { get; set; }
+
+    private async Task Login()
+    {
+        await model.ShowModal();
+    }
+
+    private async Task refresh()
+    {
+        StateHasChanged();
+    }
+}

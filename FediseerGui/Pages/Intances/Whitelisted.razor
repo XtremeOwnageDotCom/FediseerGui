@@ -21,7 +21,9 @@
     <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor" />
     <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Sortable=false>
         <DisplayTemplate>
-            <Blazorise.Bootstrap.Button Color="Color.Success" Clicked="async () => await Endorse(context)">Endorse</Blazorise.Bootstrap.Button>
+            <RequiresLogin>
+                <Blazorise.Bootstrap.Button Color="Color.Success" Clicked="async () => await Endorse(context)">Endorse</Blazorise.Bootstrap.Button>
+            </RequiresLogin>
         </DisplayTemplate>
     </DataGridColumn>
 </DataGrid>
@@ -29,7 +31,7 @@
 
 @code {
     [CascadingParameter]
-    public FediseerClient client { get; set; }
+    public LocalStorage storage { get; set; }
 
     IEnumerable<InstanceDetails> instances { get; set; } = Enumerable.Empty<InstanceDetails>();
     private Models.AddEndorsement endorsementComponent { get; set; }
@@ -42,7 +44,7 @@
     {
         await base.OnParametersSetAsync();
 
-        var whitelistReponse = await client.Get_whitelistAsync("gui", null, null, null, null, null);
+        var whitelistReponse = await storage.client.Get_whitelistAsync(storage.UserAgent, null, null, null, null, null);
 
         instances = whitelistReponse.Result.Instances;
     }

@@ -1,0 +1,87 @@
+﻿@page "/instances/claim"
+@using System.ComponentModel.DataAnnotations;
+
+
+
+<Field>
+    <Label>Domain</Label>
+    <Validation Validator="ValidationRule.IsNotEmpty">
+        <TextEdit @bind-Text=Domain Placeholder="Enter domain to claim">
+            <Feedback>
+                <ValidationNone>Please enter a valid domain. ie. lemmyonline.com</ValidationNone>
+                <ValidationError>Please enter a valid domain</ValidationError>
+            </Feedback>
+        </TextEdit>
+    </Validation>
+    <FieldHelp>
+        Enter domain to claim. ie, lemmyonline.com
+    </FieldHelp>
+</Field>
+
+<Field>
+    <Label>Admin</Label>
+    <Validation Validator="ValidationRule.IsNotEmpty">
+        <TextEdit @bind-Text=Admin Placeholder="Enter domain to claim">
+            <Feedback>
+                <ValidationNone>Please enter a valid domain. ie. lemmyonline.com</ValidationNone>
+                <ValidationError>Please enter a valid domain</ValidationError>
+            </Feedback>
+        </TextEdit>
+    </Validation>
+    <FieldHelp>
+        Enter your username. Must be admin on provided instance.
+    </FieldHelp>
+</Field>
+
+<Div Class="error">
+    @Error
+</Div>
+
+<Button Color="Color.Secondary" Clicked="@Cancel">Cancel</Button>
+<Button Color="Color.Primary" Clicked="@ClaimInstance">Add Guarantee</Button>
+
+
+
+
+@code {
+    //ToDo - better validations needed here. Need to validate an actual domain name is entered.
+
+    [Required]
+    [StringLength(50)]
+    private string Domain { get; set; }
+
+    [Required]
+    [StringLength(50)]
+    private string Admin { get; set; }
+
+    [CascadingParameter]
+    public LocalStorage storage { get; set; }
+
+    [Inject]
+    NavigationManager navMgr { get; set; }
+
+    private string Error { get; set; }
+
+    private async Task Cancel()
+    {
+        navMgr.NavigateTo("/instances/whitelisted");
+    }
+
+    private async Task ClaimInstance()
+    {
+        try
+        {
+            var resp = await storage.client.Put_whitelist_domainAsync(storage.UserAgent, new Payload
+                {
+                    Admin = Admin
+                }, null, Domain);
+
+            navMgr.NavigateTo("/instances/whitelisted");
+        }
+        catch (Fediseer.ApiException ex)
+        {
+            Error = "ERROR: " + ex.Response;
+            Console.WriteLine(ex.Message);
+        }
+    }
+}
