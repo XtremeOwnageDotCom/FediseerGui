@@ -170,136 +170,6 @@ namespace Fediseer
         }
 
         /// <summary>
-        /// Withdraw an instance endorsement
-        /// </summary>
-        /// <param name="apikey">The sending instance's API key.</param>
-        /// <param name="client_Agent">The client name and version.</param>
-        /// <param name="x_Fields">An optional fields mask</param>
-        /// <returns>Withdraw Instance Endorsement</returns>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Delete_endorsementsAsync(string apikey, string client_Agent, string x_Fields, string domain)
-        {
-            return Delete_endorsementsAsync(apikey, client_Agent, x_Fields, domain, System.Threading.CancellationToken.None);
-        }
-
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>
-        /// Withdraw an instance endorsement
-        /// </summary>
-        /// <param name="apikey">The sending instance's API key.</param>
-        /// <param name="client_Agent">The client name and version.</param>
-        /// <param name="x_Fields">An optional fields mask</param>
-        /// <returns>Withdraw Instance Endorsement</returns>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Delete_endorsementsAsync(string apikey, string client_Agent, string x_Fields, string domain, System.Threading.CancellationToken cancellationToken)
-        {
-            if (domain == null)
-                throw new System.ArgumentNullException("domain");
-
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/endorsements/{domain}");
-            urlBuilder_.Replace("{domain}", System.Uri.EscapeDataString(ConvertToString(domain, System.Globalization.CultureInfo.InvariantCulture)));
-
-            var client_ = _httpClient;
-            var disposeClient_ = false;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-
-                    if (apikey == null)
-                        throw new System.ArgumentNullException("apikey");
-                    request_.Headers.TryAddWithoutValidation("apikey", ConvertToString(apikey, System.Globalization.CultureInfo.InvariantCulture));
-
-                    if (client_Agent != null)
-                        request_.Headers.TryAddWithoutValidation("Client-Agent", ConvertToString(client_Agent, System.Globalization.CultureInfo.InvariantCulture));
-
-                    if (x_Fields != null)
-                        request_.Headers.TryAddWithoutValidation("X-Fields", ConvertToString(x_Fields, System.Globalization.CultureInfo.InvariantCulture));
-                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-                    PrepareRequest(client_, request_, urlBuilder_);
-
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-
-                    PrepareRequest(client_, request_, url_);
-
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    var disposeResponse_ = true;
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-
-                        ProcessResponse(client_, response_);
-
-                        var status_ = (int)response_.StatusCode;
-                        if (status_ == 404)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new ApiException<RequestError>("Instance not registered", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == 401)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new ApiException<RequestError>("Invalid API Key", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == 400)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new ApiException<RequestError>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == 200)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<SimpleResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            return new SwaggerResponse<SimpleResponse>(status_, headers_, objectResponse_.Object);
-                        }
-                        else
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
-                        }
-                    }
-                    finally
-                    {
-                        if (disposeResponse_)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-                if (disposeClient_)
-                    client_.Dispose();
-            }
-        }
-
-        /// <summary>
         /// Endorse an instance
         /// </summary>
         /// <remarks>
@@ -395,6 +265,136 @@ namespace Fediseer
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new ApiException<RequestError>("Not Guaranteed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<RequestError>("Invalid API Key", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<RequestError>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<SimpleResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return new SwaggerResponse<SimpleResponse>(status_, headers_, objectResponse_.Object);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Withdraw an instance endorsement
+        /// </summary>
+        /// <param name="apikey">The sending instance's API key.</param>
+        /// <param name="client_Agent">The client name and version.</param>
+        /// <param name="x_Fields">An optional fields mask</param>
+        /// <returns>Withdraw Instance Endorsement</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Delete_endorsementsAsync(string apikey, string client_Agent, string x_Fields, string domain)
+        {
+            return Delete_endorsementsAsync(apikey, client_Agent, x_Fields, domain, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Withdraw an instance endorsement
+        /// </summary>
+        /// <param name="apikey">The sending instance's API key.</param>
+        /// <param name="client_Agent">The client name and version.</param>
+        /// <param name="x_Fields">An optional fields mask</param>
+        /// <returns>Withdraw Instance Endorsement</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Delete_endorsementsAsync(string apikey, string client_Agent, string x_Fields, string domain, System.Threading.CancellationToken cancellationToken)
+        {
+            if (domain == null)
+                throw new System.ArgumentNullException("domain");
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/endorsements/{domain}");
+            urlBuilder_.Replace("{domain}", System.Uri.EscapeDataString(ConvertToString(domain, System.Globalization.CultureInfo.InvariantCulture)));
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+
+                    if (apikey == null)
+                        throw new System.ArgumentNullException("apikey");
+                    request_.Headers.TryAddWithoutValidation("apikey", ConvertToString(apikey, System.Globalization.CultureInfo.InvariantCulture));
+
+                    if (client_Agent != null)
+                        request_.Headers.TryAddWithoutValidation("Client-Agent", ConvertToString(client_Agent, System.Globalization.CultureInfo.InvariantCulture));
+
+                    if (x_Fields != null)
+                        request_.Headers.TryAddWithoutValidation("X-Fields", ConvertToString(x_Fields, System.Globalization.CultureInfo.InvariantCulture));
+                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 404)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<RequestError>("Instance not registered", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 401)
@@ -564,35 +564,31 @@ namespace Fediseer
         }
 
         /// <summary>
-        /// Withdraw an instance guarantee
+        /// Retrieve instance information via API Key
         /// </summary>
         /// <param name="apikey">The sending instance's API key.</param>
         /// <param name="client_Agent">The client name and version.</param>
         /// <param name="x_Fields">An optional fields mask</param>
-        /// <returns>Withdraw Instance Guarantee</returns>
+        /// <returns>Instance</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Delete_guaranteesAsync(string apikey, string client_Agent, string x_Fields, string domain)
+        public virtual System.Threading.Tasks.Task<SwaggerResponse<InstanceDetails>> Get_find_instanceAsync(string apikey, string client_Agent, string x_Fields)
         {
-            return Delete_guaranteesAsync(apikey, client_Agent, x_Fields, domain, System.Threading.CancellationToken.None);
+            return Get_find_instanceAsync(apikey, client_Agent, x_Fields, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Withdraw an instance guarantee
+        /// Retrieve instance information via API Key
         /// </summary>
         /// <param name="apikey">The sending instance's API key.</param>
         /// <param name="client_Agent">The client name and version.</param>
         /// <param name="x_Fields">An optional fields mask</param>
-        /// <returns>Withdraw Instance Guarantee</returns>
+        /// <returns>Instance</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Delete_guaranteesAsync(string apikey, string client_Agent, string x_Fields, string domain, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SwaggerResponse<InstanceDetails>> Get_find_instanceAsync(string apikey, string client_Agent, string x_Fields, System.Threading.CancellationToken cancellationToken)
         {
-            if (domain == null)
-                throw new System.ArgumentNullException("domain");
-
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/guarantees/{domain}");
-            urlBuilder_.Replace("{domain}", System.Uri.EscapeDataString(ConvertToString(domain, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/find_instance");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -610,7 +606,7 @@ namespace Fediseer
 
                     if (x_Fields != null)
                         request_.Headers.TryAddWithoutValidation("X-Fields", ConvertToString(x_Fields, System.Globalization.CultureInfo.InvariantCulture));
-                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -634,16 +630,6 @@ namespace Fediseer
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 404)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new ApiException<RequestError>("Instance not registered", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
                         if (status_ == 401)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -654,24 +640,14 @@ namespace Fediseer
                             throw new ApiException<RequestError>("Invalid API Key", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
-                        if (status_ == 400)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new ApiException<RequestError>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<SimpleResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<InstanceDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return new SwaggerResponse<SimpleResponse>(status_, headers_, objectResponse_.Object);
+                            return new SwaggerResponse<InstanceDetails>(status_, headers_, objectResponse_.Object);
                         }
                         else
                         {
@@ -793,6 +769,136 @@ namespace Fediseer
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new ApiException<RequestError>("Instance Not Guaranteed or Tartget instance Guaranteed by others", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<RequestError>("Invalid API Key", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<RequestError>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<SimpleResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return new SwaggerResponse<SimpleResponse>(status_, headers_, objectResponse_.Object);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Withdraw an instance guarantee
+        /// </summary>
+        /// <param name="apikey">The sending instance's API key.</param>
+        /// <param name="client_Agent">The client name and version.</param>
+        /// <param name="x_Fields">An optional fields mask</param>
+        /// <returns>Withdraw Instance Guarantee</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Delete_guaranteesAsync(string apikey, string client_Agent, string x_Fields, string domain)
+        {
+            return Delete_guaranteesAsync(apikey, client_Agent, x_Fields, domain, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Withdraw an instance guarantee
+        /// </summary>
+        /// <param name="apikey">The sending instance's API key.</param>
+        /// <param name="client_Agent">The client name and version.</param>
+        /// <param name="x_Fields">An optional fields mask</param>
+        /// <returns>Withdraw Instance Guarantee</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Delete_guaranteesAsync(string apikey, string client_Agent, string x_Fields, string domain, System.Threading.CancellationToken cancellationToken)
+        {
+            if (domain == null)
+                throw new System.ArgumentNullException("domain");
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/guarantees/{domain}");
+            urlBuilder_.Replace("{domain}", System.Uri.EscapeDataString(ConvertToString(domain, System.Globalization.CultureInfo.InvariantCulture)));
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+
+                    if (apikey == null)
+                        throw new System.ArgumentNullException("apikey");
+                    request_.Headers.TryAddWithoutValidation("apikey", ConvertToString(apikey, System.Globalization.CultureInfo.InvariantCulture));
+
+                    if (client_Agent != null)
+                        request_.Headers.TryAddWithoutValidation("Client-Agent", ConvertToString(client_Agent, System.Globalization.CultureInfo.InvariantCulture));
+
+                    if (x_Fields != null)
+                        request_.Headers.TryAddWithoutValidation("X-Fields", ConvertToString(x_Fields, System.Globalization.CultureInfo.InvariantCulture));
+                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 404)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<RequestError>("Instance not registered", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 401)
@@ -1162,14 +1268,15 @@ namespace Fediseer
         /// </summary>
         /// <param name="client_Agent">The client name and version.</param>
         /// <param name="activity_suspicion">How many users per local post+comment to consider suspicious</param>
+        /// <param name="active_suspicion">How many users per active users to consider suspicious</param>
         /// <param name="csv">Set to true to return just the domains as a csv. Mutually exclusive with domains</param>
         /// <param name="domains">Set to true to return just the domains as a list. Mutually exclusive with csv</param>
         /// <param name="x_Fields">An optional fields mask</param>
         /// <returns>Suspicious Instances</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SwaggerResponse<SuspiciousInstances>> Get_suspicionsAsync(string client_Agent, int? activity_suspicion, bool? csv, bool? domains, string x_Fields)
+        public virtual System.Threading.Tasks.Task<SwaggerResponse<SuspiciousInstances>> Get_suspicionsAsync(string client_Agent, int? activity_suspicion, int? active_suspicion, bool? csv, bool? domains, string x_Fields)
         {
-            return Get_suspicionsAsync(client_Agent, activity_suspicion, csv, domains, x_Fields, System.Threading.CancellationToken.None);
+            return Get_suspicionsAsync(client_Agent, activity_suspicion, active_suspicion, csv, domains, x_Fields, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -1178,18 +1285,23 @@ namespace Fediseer
         /// </summary>
         /// <param name="client_Agent">The client name and version.</param>
         /// <param name="activity_suspicion">How many users per local post+comment to consider suspicious</param>
+        /// <param name="active_suspicion">How many users per active users to consider suspicious</param>
         /// <param name="csv">Set to true to return just the domains as a csv. Mutually exclusive with domains</param>
         /// <param name="domains">Set to true to return just the domains as a list. Mutually exclusive with csv</param>
         /// <param name="x_Fields">An optional fields mask</param>
         /// <returns>Suspicious Instances</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SwaggerResponse<SuspiciousInstances>> Get_suspicionsAsync(string client_Agent, int? activity_suspicion, bool? csv, bool? domains, string x_Fields, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SwaggerResponse<SuspiciousInstances>> Get_suspicionsAsync(string client_Agent, int? activity_suspicion, int? active_suspicion, bool? csv, bool? domains, string x_Fields, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/instances?");
             if (activity_suspicion != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("activity_suspicion") + "=").Append(System.Uri.EscapeDataString(ConvertToString(activity_suspicion, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (active_suspicion != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("active_suspicion") + "=").Append(System.Uri.EscapeDataString(ConvertToString(active_suspicion, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (csv != null)
             {
@@ -1460,6 +1572,125 @@ namespace Fediseer
         }
 
         /// <summary>
+        /// Claim an fediverse instance
+        /// </summary>
+        /// <remarks>
+        /// If the instance hasn't been recorded yet it will be polled and added.
+        /// <br/>You must specify an admin account which will recieve the new API key via Private Message.
+        /// </remarks>
+        /// <param name="client_Agent">The client name and version.</param>
+        /// <param name="x_Fields">An optional fields mask</param>
+        /// <returns>Instances</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<SwaggerResponse<InstanceDetails>> Put_whitelist_domainAsync(string client_Agent, Payload payload, string x_Fields, string domain)
+        {
+            return Put_whitelist_domainAsync(client_Agent, payload, x_Fields, domain, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Claim an fediverse instance
+        /// </summary>
+        /// <remarks>
+        /// If the instance hasn't been recorded yet it will be polled and added.
+        /// <br/>You must specify an admin account which will recieve the new API key via Private Message.
+        /// </remarks>
+        /// <param name="client_Agent">The client name and version.</param>
+        /// <param name="x_Fields">An optional fields mask</param>
+        /// <returns>Instances</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<SwaggerResponse<InstanceDetails>> Put_whitelist_domainAsync(string client_Agent, Payload payload, string x_Fields, string domain, System.Threading.CancellationToken cancellationToken)
+        {
+            if (domain == null)
+                throw new System.ArgumentNullException("domain");
+
+            if (payload == null)
+                throw new System.ArgumentNullException("payload");
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/whitelist/{domain}");
+            urlBuilder_.Replace("{domain}", System.Uri.EscapeDataString(ConvertToString(domain, System.Globalization.CultureInfo.InvariantCulture)));
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+
+                    if (client_Agent != null)
+                        request_.Headers.TryAddWithoutValidation("Client-Agent", ConvertToString(client_Agent, System.Globalization.CultureInfo.InvariantCulture));
+
+                    if (x_Fields != null)
+                        request_.Headers.TryAddWithoutValidation("X-Fields", ConvertToString(x_Fields, System.Globalization.CultureInfo.InvariantCulture));
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(payload, _settings.Value);
+                    var content_ = new System.Net.Http.StringContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<RequestError>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<InstanceDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return new SwaggerResponse<InstanceDetails>(status_, headers_, objectResponse_.Object);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Regenerate API key for instance
         /// </summary>
         /// <param name="apikey">The sending instance's API key.</param>
@@ -1467,7 +1698,7 @@ namespace Fediseer
         /// <param name="x_Fields">An optional fields mask</param>
         /// <returns>Instances</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Patch_whitelist_domainAsync(string apikey, string client_Agent, Payload payload, string x_Fields, string domain)
+        public virtual System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Patch_whitelist_domainAsync(string apikey, string client_Agent, Payload2 payload, string x_Fields, string domain)
         {
             return Patch_whitelist_domainAsync(apikey, client_Agent, payload, x_Fields, domain, System.Threading.CancellationToken.None);
         }
@@ -1481,7 +1712,7 @@ namespace Fediseer
         /// <param name="x_Fields">An optional fields mask</param>
         /// <returns>Instances</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Patch_whitelist_domainAsync(string apikey, string client_Agent, Payload payload, string x_Fields, string domain, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SwaggerResponse<SimpleResponse>> Patch_whitelist_domainAsync(string apikey, string client_Agent, Payload2 payload, string x_Fields, string domain, System.Threading.CancellationToken cancellationToken)
         {
             if (domain == null)
                 throw new System.ArgumentNullException("domain");
@@ -1651,125 +1882,6 @@ namespace Fediseer
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<InstanceDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            return new SwaggerResponse<InstanceDetails>(status_, headers_, objectResponse_.Object);
-                        }
-                        else
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
-                        }
-                    }
-                    finally
-                    {
-                        if (disposeResponse_)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-                if (disposeClient_)
-                    client_.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Claim an fediverse instance
-        /// </summary>
-        /// <remarks>
-        /// If the instance hasn't been recorded yet it will be polled and added.
-        /// <br/>You must specify an admin account which will recieve the new API key via Private Message.
-        /// </remarks>
-        /// <param name="client_Agent">The client name and version.</param>
-        /// <param name="x_Fields">An optional fields mask</param>
-        /// <returns>Instances</returns>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SwaggerResponse<InstanceDetails>> Put_whitelist_domainAsync(string client_Agent, Payload2 payload, string x_Fields, string domain)
-        {
-            return Put_whitelist_domainAsync(client_Agent, payload, x_Fields, domain, System.Threading.CancellationToken.None);
-        }
-
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>
-        /// Claim an fediverse instance
-        /// </summary>
-        /// <remarks>
-        /// If the instance hasn't been recorded yet it will be polled and added.
-        /// <br/>You must specify an admin account which will recieve the new API key via Private Message.
-        /// </remarks>
-        /// <param name="client_Agent">The client name and version.</param>
-        /// <param name="x_Fields">An optional fields mask</param>
-        /// <returns>Instances</returns>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SwaggerResponse<InstanceDetails>> Put_whitelist_domainAsync(string client_Agent, Payload2 payload, string x_Fields, string domain, System.Threading.CancellationToken cancellationToken)
-        {
-            if (domain == null)
-                throw new System.ArgumentNullException("domain");
-
-            if (payload == null)
-                throw new System.ArgumentNullException("payload");
-
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/whitelist/{domain}");
-            urlBuilder_.Replace("{domain}", System.Uri.EscapeDataString(ConvertToString(domain, System.Globalization.CultureInfo.InvariantCulture)));
-
-            var client_ = _httpClient;
-            var disposeClient_ = false;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-
-                    if (client_Agent != null)
-                        request_.Headers.TryAddWithoutValidation("Client-Agent", ConvertToString(client_Agent, System.Globalization.CultureInfo.InvariantCulture));
-
-                    if (x_Fields != null)
-                        request_.Headers.TryAddWithoutValidation("X-Fields", ConvertToString(x_Fields, System.Globalization.CultureInfo.InvariantCulture));
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(payload, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
-                    request_.Method = new System.Net.Http.HttpMethod("PUT");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-                    PrepareRequest(client_, request_, urlBuilder_);
-
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-
-                    PrepareRequest(client_, request_, url_);
-
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    var disposeResponse_ = true;
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-
-                        ProcessResponse(client_, response_);
-
-                        var status_ = (int)response_.StatusCode;
-                        if (status_ == 400)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<RequestError>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new ApiException<RequestError>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
                         if (status_ == 200)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<InstanceDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -2057,19 +2169,13 @@ namespace Fediseer
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class WhitelistedInstances
+    public partial class RequestError
     {
-        [Newtonsoft.Json.JsonProperty("instances", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<InstanceDetails> Instances { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("domains", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<string> Domains { get; set; }
-
         /// <summary>
-        /// The instance domains as a csv.
+        /// The error message for this status code.
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("csv", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Csv { get; set; }
+        [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Message { get; set; }
 
     }
 
@@ -2093,6 +2199,12 @@ namespace Fediseer
         /// </summary>
         [Newtonsoft.Json.JsonProperty("software", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Software { get; set; }
+
+        /// <summary>
+        /// How many admins from this instance has claimed it.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("claimed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? Claimed { get; set; }
 
         /// <summary>
         /// The instance uptime pct. 100% and thousand of users is unlikely
@@ -2127,13 +2239,19 @@ namespace Fediseer
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class RequestError
+    public partial class WhitelistedInstances
     {
+        [Newtonsoft.Json.JsonProperty("instances", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<InstanceDetails> Instances { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("domains", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<string> Domains { get; set; }
+
         /// <summary>
-        /// The error message for this status code.
+        /// The instance domains as a csv.
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Message { get; set; }
+        [Newtonsoft.Json.JsonProperty("csv", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Csv { get; set; }
 
     }
 
@@ -2152,19 +2270,19 @@ namespace Fediseer
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class Payload
     {
-        [Newtonsoft.Json.JsonProperty("regenerate_key", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Regenerate_key { get; set; }
+        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Admin { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("guarantor", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Guarantor { get; set; }
 
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class Payload2
     {
-        [Newtonsoft.Json.JsonProperty("admin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Admin { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("guarantor", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Guarantor { get; set; }
+        [Newtonsoft.Json.JsonProperty("regenerate_key", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Regenerate_key { get; set; }
 
     }
 
