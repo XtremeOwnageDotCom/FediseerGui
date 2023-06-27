@@ -21,10 +21,10 @@
 <Field>
     <Label>Admin</Label>
     <Validation Validator="ValidationRule.IsNotEmpty">
-        <TextEdit @bind-Text=Admin Placeholder="Enter domain to claim">
+        <TextEdit @bind-Text=Admin Placeholder="Your username">
             <Feedback>
-                <ValidationNone>Please enter a valid domain. ie. lemmyonline.com</ValidationNone>
-                <ValidationError>Please enter a valid domain</ValidationError>
+                <ValidationNone>Please enter your username.</ValidationNone>
+                <ValidationError>Please enter a valid username.</ValidationError>
             </Feedback>
         </TextEdit>
     </Validation>
@@ -38,7 +38,7 @@
 </Div>
 
 <Button Color="Color.Secondary" Clicked="@Cancel">Cancel</Button>
-<Button Color="Color.Primary" Clicked="@ClaimInstance">Add Guarantee</Button>
+<Button Color="Color.Primary" Clicked="@ClaimInstance">Claim Instance</Button>
 
 
 
