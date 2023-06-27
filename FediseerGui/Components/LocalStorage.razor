@@ -40,6 +40,15 @@
         //Save in browser storage.
         await browserStorage.SetAsync("apikey", this._apikey);
     }
+
+    public async Task LogOut()
+    {
+        this._apikey = null;
+        this.InstanceDetails = null;
+
+        await browserStorage.DeleteAsync("apikey");
+        StateHasChanged();
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!isReady)

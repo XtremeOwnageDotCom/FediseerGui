@@ -1,7 +1,7 @@
 ﻿<LogonComponent @ref=model OnLoggedIn="refresh" />
 @if (storage.IsLoggedIn && !string.IsNullOrEmpty(storage?.InstanceDetails?.Domain))
 {
-    <text>Welcome, @storage.InstanceDetails.Domain</text>
+    <text>Welcome, @storage.InstanceDetails.Domain    <Button Size=Size.ExtraSmall Color=Color.Secondary Clicked="Logout" Border="Border.Rounded.Is4">(Logout)</Button></text>
 }
 else
 {
@@ -21,5 +21,10 @@ else
     private async Task refresh()
     {
         StateHasChanged();
+    }
+
+    private async Task Logout()
+    {
+        await storage.LogOut();
     }
 }
