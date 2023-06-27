@@ -57,8 +57,7 @@
 
         if (resp.StatusCode == 200)
         {
-            storage.ApiKey = ApiKey;
-            storage.InstanceDetails = resp.Result;
+            await storage.LoggedIn(ApiKey, resp.Result);
             await OnLoggedIn.InvokeAsync();
             await this.modal.Hide();
             await storage.StateChanged();

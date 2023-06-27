@@ -1,6 +1,8 @@
 ﻿@using Fediseer;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 @ChildContent
+
 
 @code {
     [Parameter]
@@ -9,9 +11,16 @@
     [Inject]
     public Fediseer.FediseerClient client { get; set; }
 
+    [Inject]
+    ProtectedLocalStorage browserStorage { get; set; }
+
+    private bool isReady { get; set; }
+
     public bool IsLoggedIn => !string.IsNullOrEmpty(ApiKey) && InstanceDetails != null;
 
-    public string ApiKey { get; set; }
+    public string ApiKey => _apikey;
+
+    private string _apikey;
 
     public InstanceDetails InstanceDetails { get; set; }
 
@@ -21,5 +30,40 @@
     {
         StateHasChanged();
         return Task.CompletedTask;
+    }
+
+    public async Task LoggedIn(string ApiKey, InstanceDetails Instance)
+    {
+        this._apikey = ApiKey;
+        this.InstanceDetails = Instance;
+
+        //Save in browser storage.
+        await browserStorage.SetAsync("apikey", this._apikey);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!isReady)
+        {
+            var val = await browserStorage.GetAsync<string>("apikey");
+
+            if (val.Success)
+            {
+                _apikey = val.Value;
+
+                try
+                {
+                    var insta = await client.Get_find_instanceAsync(ApiKey, UserAgent, null);
+                    this.InstanceDetails = insta.Result;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error occured while getting current instance details");
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
+            isReady = true;
+            StateHasChanged();
+        }
     }
 }
