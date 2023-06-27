@@ -11,21 +11,28 @@
           PageSize="50"
           ShowPager
           Responsive>
-    <DataGridCommandColumn />
-    <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Caption="Domain" Sortable="true" />
-    <DataGridColumn Field="@nameof(InstanceDetails.Software)" Caption="Software" />
-    <DataGridColumn Field="@nameof(InstanceDetails.Open_registrations)" Caption="Open Registration" />
-    <DataGridColumn Field="@nameof(InstanceDetails.Email_verify)" Caption="Email Verification" />
-    <DataGridColumn Field="@nameof(InstanceDetails.Approvals)" Caption="Approvals" />
-    <DataGridColumn Field="@nameof(InstanceDetails.Endorsements)" Caption="Endorsements" />
-    <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor" />
-    <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Sortable=false>
-        <DisplayTemplate>
-            <RequiresLogin>
-                <Blazorise.Bootstrap.Button Color="Color.Success" Clicked="async () => await Endorse(context)">Endorse</Blazorise.Bootstrap.Button>
-            </RequiresLogin>
-        </DisplayTemplate>
-    </DataGridColumn>
+    <DataGridColumns>
+        <DataGridCommandColumn />
+        <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Caption="Domain" Sortable="true" />
+        <DataGridColumn Field="@nameof(InstanceDetails.Software)" Caption="Software" />
+        <DataGridColumn Field="@nameof(InstanceDetails.Open_registrations)" Caption="Open Registration" />
+        <DataGridColumn Field="@nameof(InstanceDetails.Email_verify)" Caption="Email Verification" />
+        <DataGridColumn Field="@nameof(InstanceDetails.Approvals)" Caption="Approvals" />
+        <DataGridColumn Field="@nameof(InstanceDetails.Endorsements)" Caption="Endorsements" />
+        <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor" />
+        <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Sortable=false>
+            <DisplayTemplate>
+                <RequiresLogin>
+                    <Blazorise.Bootstrap.Button Color="Color.Success" Clicked="async () => await Endorse(context)">Endorse</Blazorise.Bootstrap.Button>
+                </RequiresLogin>
+            </DisplayTemplate>
+        </DataGridColumn>
+    </DataGridColumns>
+    <EmptyTemplate>
+        <div class="box">
+            Please wait, retreiving instances
+        </div>
+    </EmptyTemplate>
 </DataGrid>
 
 
