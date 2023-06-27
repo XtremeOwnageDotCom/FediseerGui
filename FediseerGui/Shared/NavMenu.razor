@@ -20,7 +20,7 @@
             </BarLink>
             </BarItem>*@
             <BarItem>
-                <BarLink To="https://fediseer.com/">Fediseer Documentation</BarLink>
+                <BarLink To="https://fediseer.com/" Target="Target.Blank">Fediseer Documentation</BarLink>
             </BarItem>
             <BarItem>
                 <BarLink To="/instances/whitelisted">Whitelisted Instances</BarLink>
@@ -37,6 +37,8 @@
 
 @code {
     private bool collapseNavMenu = true;
+
+    private string icon = "up-right-from-square";
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
