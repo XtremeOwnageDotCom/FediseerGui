@@ -1,0 +1,74 @@
+﻿@page "/guarantees/my"
+
+@using global::Fediseer;
+
+<PageTitle>My Guaranetees</PageTitle>
+
+<RequiresLogin ShowLoginButton>
+    <FediseerGui.Models.RevokeGuarantee OnRevoked="removeInstance" @ref=modelRef />
+
+    <DataGrid TItem="InstanceDetails"
+              ReadData="OnReadData"
+              Data="@instances"
+              PageSize="50"
+              ShowPager
+              Filterable
+              SortMode="DataGridSortMode.Single"
+              Responsive>
+        <DataGridColumns>
+            <DataGridCommandColumn />
+            <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Caption="Domain" Sortable Filterable />
+            <DataGridColumn Field="@nameof(InstanceDetails.Software)" Caption="Software" Sortable Filterable />
+            <DataGridColumn Field="@nameof(InstanceDetails.Open_registrations)" Caption="Open Registration" Sortable Filterable />
+            <DataGridColumn Field="@nameof(InstanceDetails.Email_verify)" Caption="Email Verification" Sortable Filterable />
+            <DataGridColumn Field="@nameof(InstanceDetails.Approvals)" Caption="Approvals" Sortable Filterable=false />
+            <DataGridColumn Field="@nameof(InstanceDetails.Endorsements)" Caption="Endorsements" Sortable Filterable=false />
+            <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor" Sortable />
+            <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Sortable=false Filterable=false>
+                <DisplayTemplate>
+                    <Blazorise.Bootstrap.Button Color="Color.Danger" Clicked="async () => await Revoke(context)">Revoke Guarantee</Blazorise.Bootstrap.Button>
+                </DisplayTemplate>
+            </DataGridColumn>
+        </DataGridColumns>
+        <EmptyTemplate>
+            <div class="box">
+                You have not guaranteed any instances
+            </div>
+        </EmptyTemplate>
+        <LoadingTemplate>
+            <div class="box">
+                Please wait, retreiving data
+            </div>
+        </LoadingTemplate>
+    </DataGrid>
+
+</RequiresLogin>
+
+
+@code {
+    [CascadingParameter]
+    public LocalStorage storage { get; set; }
+
+    List<InstanceDetails> instances { get; set; } = Enumerable.Empty<InstanceDetails>().ToList();
+    private Models.RevokeGuarantee modelRef { get; set; }
+
+    private Task Revoke(InstanceDetails instance)
+    {
+        return modelRef.ShowModal(instance);
+    }
+
+    private async Task removeInstance(InstanceDetails instance)
+    {
+        instances.Remove(instance);
+        StateHasChanged();
+    }
+
+    private async Task OnReadData(DataGridReadDataEventArgs<InstanceDetails> e)
+    {
+        if (!e.CancellationToken.IsCancellationRequested)
+        {
+            var Response = await storage.client.Get_guarantorsAsync(storage.UserAgent, null, null, null, storage.InstanceDetails?.Domain);
+            instances = Response.Result.Instances.ToList();
+        }
+    }
+}

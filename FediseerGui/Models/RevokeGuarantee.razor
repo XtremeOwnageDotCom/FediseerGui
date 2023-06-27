@@ -1,0 +1,67 @@
+﻿@using FediseerGui.Components;
+@using global::Fediseer;
+<Modal @ref="modalRef">
+    @if (instance is not null)
+    {
+        <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Revoke Guarantee</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <RequiresLogin>
+                <ChildContent>
+                    <Field>
+                        <FieldLabel>Domain</FieldLabel>
+                        <TextEdit ReadOnly @bind-Text=instance.Domain />
+                        </Field>
+                        <ModalFooter>
+                            <Button Color="Color.Secondary" Clicked="@HideModal">Cancel</Button>
+                            <Button Color="Color.Primary" Clicked="@Revoke">Yes I Sure</Button>
+                        </ModalFooter>
+                    </ChildContent>
+                    <NotLoggedIn>
+                        Please login first.
+                    </NotLoggedIn>
+                </RequiresLogin>
+            </ModalBody>
+        </ModalContent>
+    }
+</Modal>
+
+
+@code {
+    // reference to the modal component
+    private Modal modalRef;
+    InstanceDetails instance;
+
+    [CascadingParameter]
+    public LocalStorage storage { get; set; }
+
+    /// <summary>
+    /// Executed when a user is logged in.
+    /// </summary>
+    [Parameter]
+    public EventCallback<InstanceDetails> OnRevoked { get; set; }
+
+    public Task ShowModal(InstanceDetails instance)
+    {
+        this.instance = instance;
+        return modalRef.Show();
+    }
+
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+
+    private async Task Revoke()
+    {
+        var resp = await storage.client.Delete_guaranteesAsync(storage.ApiKey, storage.UserAgent, null, instance.Domain);
+
+        Console.WriteLine(resp.Result.Message);
+
+        await OnRevoked.InvokeAsync(instance);
+        await HideModal();
+    }
+}
