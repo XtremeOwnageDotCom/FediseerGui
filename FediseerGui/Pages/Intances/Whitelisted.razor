@@ -7,7 +7,7 @@
 <FediseerGui.Models.AddEndorsement @ref=endorsementComponent />
 
 <DataGrid TItem="InstanceDetails"
-          Data="@instances"
+          Data="@instances" ReadData=OnReadData
           PageSize="50"
           ShowPager
           Filterable
@@ -32,9 +32,14 @@
     </DataGridColumns>
     <EmptyTemplate>
         <div class="box">
-            Please wait, retreiving instances
+            No results were found.
         </div>
     </EmptyTemplate>
+    <LoadingTemplate>
+        <div class="box">
+            Please wait, loading data
+        </div>
+    </LoadingTemplate>
 </DataGrid>
 
 
@@ -49,12 +54,13 @@
     {
         return endorsementComponent.ShowModal(instance);
     }
-    protected override async Task OnParametersSetAsync()
+
+    private async Task OnReadData(DataGridReadDataEventArgs<InstanceDetails> e)
     {
-        await base.OnParametersSetAsync();
-
-        var whitelistReponse = await storage.client.Get_whitelistAsync(storage.UserAgent, null, null, null, null, null);
-
-        instances = whitelistReponse.Result.Instances;
+        if (!e.CancellationToken.IsCancellationRequested)
+        {
+            var whitelistReponse = await storage.client.Get_whitelistAsync(storage.UserAgent, null, null, null, null, null);
+            instances = whitelistReponse.Result.Instances;
+        }
     }
 }
