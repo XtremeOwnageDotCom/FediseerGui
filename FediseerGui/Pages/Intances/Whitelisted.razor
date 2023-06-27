@@ -10,17 +10,19 @@
           Data="@instances"
           PageSize="50"
           ShowPager
+          Filterable
+          SortMode="DataGridSortMode.Single"
           Responsive>
     <DataGridColumns>
         <DataGridCommandColumn />
-        <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Caption="Domain" Sortable="true" />
-        <DataGridColumn Field="@nameof(InstanceDetails.Software)" Caption="Software" />
-        <DataGridColumn Field="@nameof(InstanceDetails.Open_registrations)" Caption="Open Registration" />
-        <DataGridColumn Field="@nameof(InstanceDetails.Email_verify)" Caption="Email Verification" />
-        <DataGridColumn Field="@nameof(InstanceDetails.Approvals)" Caption="Approvals" />
-        <DataGridColumn Field="@nameof(InstanceDetails.Endorsements)" Caption="Endorsements" />
-        <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor" />
-        <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Sortable=false>
+        <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Caption="Domain" Sortable Filterable />
+        <DataGridColumn Field="@nameof(InstanceDetails.Software)" Caption="Software" Sortable Filterable />
+        <DataGridColumn Field="@nameof(InstanceDetails.Open_registrations)" Caption="Open Registration" Sortable Filterable />
+        <DataGridColumn Field="@nameof(InstanceDetails.Email_verify)" Caption="Email Verification" Sortable Filterable />
+        <DataGridColumn Field="@nameof(InstanceDetails.Approvals)" Caption="Approvals" Sortable Filterable=false />
+        <DataGridColumn Field="@nameof(InstanceDetails.Endorsements)" Caption="Endorsements" Sortable Filterable=false />
+        <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor" Sortable />
+        <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Sortable=false Filterable=false>
             <DisplayTemplate>
                 <RequiresLogin>
                     <Blazorise.Bootstrap.Button Color="Color.Success" Clicked="async () => await Endorse(context)">Endorse</Blazorise.Bootstrap.Button>
