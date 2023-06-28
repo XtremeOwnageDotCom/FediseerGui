@@ -6,50 +6,79 @@
 
 <FediseerGui.Models.AddEndorsement @ref=endorsementComponent />
 
-<DataGrid @ref=dataGridRef
-          TItem="InstanceDetails"
-          Data="@instances"
-          PageSize="50"
-          ShowPager
-          Filterable
-          SortMode="DataGridSortMode.Single"
-          Responsive>
-    <DataGridColumns>
-        <DataGridCommandColumn />
-        <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Caption="Domain" Sortable Filterable />
-        <DataGridColumn Field="@nameof(InstanceDetails.Software)" Caption="Software" Sortable Filterable />
-        <DataGridColumn Field="@nameof(InstanceDetails.Open_registrations)" Caption="Open Registration" Sortable Filterable />
-        <DataGridColumn Field="@nameof(InstanceDetails.Email_verify)" Caption="Email Verification" Sortable Filterable />
-        <DataGridColumn Field="@nameof(InstanceDetails.Approvals)" Caption="Approvals" Sortable Filterable=false />
-        <DataGridColumn Field="@nameof(InstanceDetails.Endorsements)" Caption="Endorsements" Sortable Filterable=false />
-        <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor" Sortable />
-        <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Sortable=false Filterable=false>
-            <DisplayTemplate>
-                <RequiresLogin>
-                    <Blazorise.Bootstrap.Button Color="Color.Success" Clicked="async () => await Endorse(context)">Endorse</Blazorise.Bootstrap.Button>
-                </RequiresLogin>
-            </DisplayTemplate>
-        </DataGridColumn>
-    </DataGridColumns>
-    <EmptyTemplate>
-        <div class="box">
-            No results were found.
-        </div>
-    </EmptyTemplate>
-    <LoadingTemplate>
+<Row Padding="Padding.Is3">
+    <Column>
+        <Button Disabled=IsLoading Color=Color.Primary Clicked="Refresh">Refresh</Button>
+    </Column>
+</Row>
+<Row>
+    @if (IsLoading)
+    {
         <div class="box">
             Please wait, loading data
         </div>
-    </LoadingTemplate>
-</DataGrid>
-
+    }
+    else
+    {
+        <DataGrid @ref=dataGridRef
+                  TItem="InstanceDetails"
+                  Data="@instances"
+                  PageSize="50"
+                ShowPager
+                Filterable
+                  SortMode="DataGridSortMode.Single"
+                Responsive>
+        <DataGridColumns>
+            <DataGridCommandColumn />
+            <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Caption="Domain"
+                                        Sortable
+                                        Filterable />
+                <DataGridColumn Field="@nameof(InstanceDetails.Software)" Caption="Software"
+                                        Sortable
+                                        Filterable />
+                <DataGridColumn Field="@nameof(InstanceDetails.Open_registrations)" Caption="Open Registration"
+                                        Sortable
+                                        Filterable />
+                <DataGridColumn Field="@nameof(InstanceDetails.Email_verify)" Caption="Email Verification"
+                                        Sortable
+                                        Filterable />
+                <DataGridColumn Field="@nameof(InstanceDetails.Approvals)" Caption="Approvals"
+                                        Sortable
+                                Filterable=false />
+                <DataGridColumn Field="@nameof(InstanceDetails.Endorsements)" Caption="Endorsements"
+                                        Sortable
+                                Filterable=false />
+                <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor"
+                                        Sortable />
+                <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Sortable=false Filterable=false>
+                    <DisplayTemplate>
+                        <RequiresLogin>
+                            <Blazorise.Bootstrap.Button Color="Color.Success" Clicked="async () => await Endorse(context)">Endorse</Blazorise.Bootstrap.Button>
+                        </RequiresLogin>
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+            <EmptyTemplate>
+                <div class="box">
+                    No results were found.
+                </div>
+            </EmptyTemplate>
+            <LoadingTemplate>
+                <div class="box">
+                    Please wait, loading data
+                </div>
+            </LoadingTemplate>
+        </DataGrid>
+    }
+</Row>
 
 @code {
     [CascadingParameter]
     public LocalStorage storage { get; set; }
 
+    private bool IsLoading { get; set; } = true;
     private DataGrid<InstanceDetails> dataGridRef { get; set; }
-    IEnumerable<InstanceDetails> instances { get; set; } = Enumerable.Empty<InstanceDetails>();
+    List<InstanceDetails> instances { get; set; } = new List<InstanceDetails>();
     private Models.AddEndorsement endorsementComponent { get; set; }
 
     private Task Endorse(InstanceDetails instance)
@@ -65,8 +94,11 @@
     }
     private async Task Refresh()
     {
+        IsLoading = true;
+        instances.Clear();
         var whitelistReponse = await storage.client.Get_whitelistAsync(storage.UserAgent, null, null, null, null, null);
-        instances = whitelistReponse.Result.Instances;
+        instances = whitelistReponse.Result.Instances.ToList();
+        IsLoading = false;
         StateHasChanged();
     }
 }
