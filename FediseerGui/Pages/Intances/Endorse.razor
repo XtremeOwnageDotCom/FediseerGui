@@ -1,0 +1,64 @@
+﻿@page "/instances/endorse/{Domain}"
+@using System.ComponentModel.DataAnnotations;
+
+<RequiresLogin ShowLoginButton>
+    <Field>
+        <Label>Domain</Label>
+        <FieldHelp>
+            This will add an endorsement for @Domain from @storage.InstanceDetails.Domain           
+        </FieldHelp>
+        <Validation Validator="ValidationRule.IsNotEmpty">
+            <TextEdit @bind-Text=Domain ReadOnly Placeholder="Enter domain to endorse">
+                <Feedback>
+                    <ValidationNone>Please enter a valid domain. ie. lemmyonline.com</ValidationNone>
+                    <ValidationError>Please enter a valid domain</ValidationError>
+                </Feedback>
+            </TextEdit>
+        </Validation>
+    </Field>
+
+    <Div Class="error">
+        @Error
+    </Div>
+
+    <Button Color="Color.Secondary" Clicked="@Cancel">Cancel</Button>
+    <Button Color="Color.Primary" Clicked="@CreateGuarantee">Endorse</Button>
+</RequiresLogin>
+
+
+
+@code {
+    //ToDo - better validations needed here. Need to validate an actual domain name is entered.
+
+    [Parameter]
+    [StringLength(50)]
+    public string Domain { get; set; }
+
+    [CascadingParameter]
+    public LocalStorage storage { get; set; }
+
+    [Inject]
+    NavigationManager navMgr { get; set; }
+
+    private string Error { get; set; }
+
+    private async Task Cancel()
+    {
+        navMgr.NavigateTo("/instances/whitelisted");
+    }
+
+    private async Task CreateGuarantee()
+    {
+        try
+        {
+            var resp = await storage.client.Put_endorsementsAsync(storage.ApiKey, storage.UserAgent, null, Domain);
+
+            navMgr.NavigateTo("/instances/whitelisted");
+        }
+        catch (Fediseer.ApiException ex)
+        {
+            Error = "ERROR: " + ex.Message;
+            Console.WriteLine(ex.Message);
+        }
+    }
+}
