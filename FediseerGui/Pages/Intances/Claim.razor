@@ -2,6 +2,11 @@
 @using System.ComponentModel.DataAnnotations;
 
 
+<Heading Size="HeadingSize.Is2">Claim Instance</Heading>
+
+<div>
+    Note, instances can only be claimed by an admin of that instance.
+</div>
 
 <Field>
     <Label>Domain</Label>
@@ -36,6 +41,8 @@
 <Div Class="error">
     @Error
 </Div>
+
+
 
 <Button Color="Color.Secondary" Clicked="@Cancel">Cancel</Button>
 <Button Color="Color.Primary" Clicked="@ClaimInstance">Claim Instance</Button>
