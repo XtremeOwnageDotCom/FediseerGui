@@ -32,24 +32,17 @@
             <DataGridCommandColumn />
             <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Caption="Domain"
                                         Sortable
-                                        Filterable />
-                <DataGridColumn Field="@nameof(InstanceDetails.Software)" Caption="Software"
-                                        Sortable
-                                        Filterable />
-                <DataGridColumn Field="@nameof(InstanceDetails.Open_registrations)" Caption="Open Registration"
-                                        Sortable
-                                        Filterable />
-                <DataGridColumn Field="@nameof(InstanceDetails.Email_verify)" Caption="Email Verification"
-                                        Sortable
-                                        Filterable />
-                <DataGridColumn Field="@nameof(InstanceDetails.Approvals)" Caption="Approvals"
-                                        Sortable
-                                Filterable=false />
-                <DataGridColumn Field="@nameof(InstanceDetails.Endorsements)" Caption="Endorsements"
-                                        Sortable
-                                Filterable=false />
-                <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor"
-                                        Sortable />
+                                        Filterable>
+                <DisplayTemplate>
+                    <Button Clicked="() => ViewInstanceDetails(context)" Color="Color.Primary">@context.Domain</Button>
+                </DisplayTemplate>
+            </DataGridColumn>
+            <DataGridColumn Field="@nameof(InstanceDetails.Software)" Caption="Software" Sortable Filterable />
+                <DataGridColumn Field="@nameof(InstanceDetails.Open_registrations)" Caption="Open Registration" Sortable Filterable />
+                <DataGridColumn Field="@nameof(InstanceDetails.Email_verify)" Caption="Email Verification" Sortable Filterable />
+                <DataGridColumn Field="@nameof(InstanceDetails.Approvals)" Caption="Approvals" Sortable Filterable=false />
+                <DataGridColumn Field="@nameof(InstanceDetails.Endorsements)" Caption="Endorsements" Sortable Filterable=false />
+                <DataGridColumn Field="@nameof(InstanceDetails.Guarantor)" Caption="Guarantor" Sortable />
                 <DataGridColumn Field="@nameof(InstanceDetails.Domain)" Sortable=false Filterable=false>
                     <DisplayTemplate>
                         <RequiresLogin>
@@ -76,6 +69,9 @@
     [CascadingParameter]
     public LocalStorage storage { get; set; }
 
+    [Inject]
+    public NavigationManager nav { get; set; }
+
     private bool IsLoading { get; set; } = true;
     private DataGrid<InstanceDetails> dataGridRef { get; set; }
     List<InstanceDetails> instances { get; set; } = new List<InstanceDetails>();
@@ -100,5 +96,10 @@
         instances = whitelistReponse.Result.Instances.ToList();
         IsLoading = false;
         StateHasChanged();
+    }
+
+    private async Task ViewInstanceDetails(InstanceDetails instanceDetails)
+    {
+        nav.NavigateTo($"/instance/details/{instanceDetails.Domain}");
     }
 }

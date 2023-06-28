@@ -1,0 +1,104 @@
+﻿@page "/instance/details/{Domain}"
+
+@using global::Fediseer;
+
+<PageTitle>@Domain</PageTitle>
+
+
+@if (IsLoading || instance is null)
+{
+    <div class="box">
+        Please wait, loading data
+    </div>
+    return;
+}
+
+<Row Padding="Padding.Is3">
+    <Heading Size="HeadingSize.Is2">Instance Details for @Domain</Heading>
+</Row>
+
+<Row>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Heading Size="HeadingSize.Is4">Basic Details</Heading>
+        <dl>
+            <dt>Domain</dt>
+            <dd>@instance.Domain</dd>
+            <dt>Software</dt>
+            <dd>@instance.Software</dd>
+            <dt>Claimed By Admins</dt>
+            <dd>@instance.Claimed</dd>
+            <dt>Open Registrations</dt>
+            <dd>@instance.Open_registrations</dd>
+            <dt>Email Verification Enabled</dt>
+            <dd>@instance.Email_verify</dd>
+            <dt>Guarantor</dt>
+            <dd><Button Color="Color.Secondary" Size=Size.ExtraSmall Clicked="() => ViewInstanceDetails(instance.Guarantor)">@instance.Guarantor</Button></dd>
+        </dl>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Heading Size="HeadingSize.Is4">Endorsed By</Heading>
+        <UnorderedList>
+            @foreach (var g in endorsedBy)
+            {
+                <UnorderedListItem>
+                    <Button Color="Color.Primary" Size=Size.ExtraSmall Clicked="() => ViewInstanceDetails(g.Domain)">
+                        @g.Domain
+                    </Button>
+                </UnorderedListItem>
+            }
+        </UnorderedList>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is3">
+        <Heading Size="HeadingSize.Is4">Guarantees Given</Heading>
+        <UnorderedList>
+            @foreach (var g in guaranteedInstances)
+            {
+                <UnorderedListItem>
+                    <Button Color="Color.Primary" Size=Size.ExtraSmall Clicked="() => ViewInstanceDetails(g.Domain)">
+                        @g.Domain
+                    </Button>
+                </UnorderedListItem>
+            }
+        </UnorderedList>
+    </Column>
+</Row>
+
+
+
+@code {
+    [Parameter]
+    public string Domain { get; set; }
+
+    [Inject]
+    public NavigationManager nav { get; set; }
+
+    [CascadingParameter]
+    public LocalStorage storage { get; set; }
+
+    private bool IsLoading { get; set; } = true;
+    private InstanceDetails instance { get; set; }
+    private IEnumerable<InstanceDetails> guaranteedInstances { get; set; }
+    private IEnumerable<InstanceDetails> endorsedBy { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+            await Refresh();
+    }
+    private async Task Refresh()
+    {
+        IsLoading = true;
+        instance = (await storage.client.Get_whitelist_domainAsync(storage.UserAgent, null, Domain)).Result;
+        guaranteedInstances = (await storage.client.Get_guarantorsAsync(storage.UserAgent, null, null, null, Domain)).Result.Instances.OrderBy(o => o.Domain);
+        endorsedBy = (await storage.client.Get_endorsementsAsync(storage.UserAgent, null, null, null, Domain)).Result.Instances.OrderBy(o => o.Domain);
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task ViewInstanceDetails(string Domain)
+    {
+        nav.NavigateTo($"/instance/details/{Domain}", true);
+    }
+}
