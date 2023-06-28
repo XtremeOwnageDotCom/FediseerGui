@@ -53,26 +53,40 @@
     {
         if (!isReady)
         {
-            var val = await browserStorage.GetAsync<string>("apikey");
-
-            if (val.Success)
+            try
             {
-                _apikey = val.Value;
+                var val = await browserStorage.GetAsync<string>("apikey");
 
-                try
+                if (val.Success)
                 {
-                    var insta = await client.Get_find_instanceAsync(ApiKey, UserAgent, null);
-                    this.InstanceDetails = insta.Result;
+                    _apikey = val.Value;
+
+                    try
+                    {
+                        var insta = await client.Get_find_instanceAsync(ApiKey, UserAgent, null);
+                        this.InstanceDetails = insta.Result;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error occured while getting current instance details");
+                        Console.WriteLine(ex.Message);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error occured while getting current instance details");
-                    Console.WriteLine(ex.Message);
-                }
+
+                isReady = true;
+                StateHasChanged();
             }
+            catch (Exception ex)
+            {
+                //Dump the exception to console.
+                Console.WriteLine(ex.ToString());
 
-            isReady = true;
-            StateHasChanged();
+                //Then- pretend a cookie didn't exist.
+                _apikey = null;
+                InstanceDetails = null;
+                isReady = true;
+                StateHasChanged();
+            }
         }
     }
 }
