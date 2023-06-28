@@ -6,8 +6,9 @@
 
 <FediseerGui.Models.AddEndorsement @ref=endorsementComponent />
 
-<DataGrid TItem="InstanceDetails"
-          Data="@instances" ReadData=OnReadData
+<DataGrid @ref=dataGridRef
+          TItem="InstanceDetails"
+          Data="@instances"
           PageSize="50"
           ShowPager
           Filterable
@@ -47,6 +48,7 @@
     [CascadingParameter]
     public LocalStorage storage { get; set; }
 
+    private DataGrid<InstanceDetails> dataGridRef { get; set; }
     IEnumerable<InstanceDetails> instances { get; set; } = Enumerable.Empty<InstanceDetails>();
     private Models.AddEndorsement endorsementComponent { get; set; }
 
@@ -54,13 +56,17 @@
     {
         return endorsementComponent.ShowModal(instance);
     }
-
-    private async Task OnReadData(DataGridReadDataEventArgs<InstanceDetails> e)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!e.CancellationToken.IsCancellationRequested)
-        {
-            var whitelistReponse = await storage.client.Get_whitelistAsync(storage.UserAgent, null, null, null, null, null);
-            instances = whitelistReponse.Result.Instances;
-        }
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+            await Refresh();
+    }
+    private async Task Refresh()
+    {
+        var whitelistReponse = await storage.client.Get_whitelistAsync(storage.UserAgent, null, null, null, null, null);
+        instances = whitelistReponse.Result.Instances;
+        StateHasChanged();
     }
 }
