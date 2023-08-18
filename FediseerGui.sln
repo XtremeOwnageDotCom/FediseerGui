@@ -5,6 +5,11 @@ VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FediseerGui", "FediseerGui\FediseerGui.csproj", "{2D0AC4B2-A1A1-4783-9399-1772C9C8584A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{C4A040E6-D947-4855-B817-67B40E88EC2B}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerifle = Dockerifle
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
